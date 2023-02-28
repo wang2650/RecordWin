@@ -92,7 +92,7 @@
                                     <StackPanel Orientation="Horizontal">
                                         <CheckBox Margin="4" Click="cbZM_Click" x:Name="cbZM" Content="桌面" VerticalAlignment="Center" IsChecked="True"/>
                                         <CheckBox Margin="4" Click="cbSXT_Click" x:Name="cbSXT" Content="摄像头" VerticalAlignment="Center"/>
-                                        <CheckBox Margin="4" Click="cbSY_Click" x:Name="cbSY" Content="声音" VerticalAlignment="Center"/>
+                                        <CheckBox Margin="4" Click="cbSY_Click" ToolTip="默认音箱声音" x:Name="cbSY" Content="麦克风声音(默认音箱)" VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </GroupBox>
                                 <GroupBox Header="软件设置">

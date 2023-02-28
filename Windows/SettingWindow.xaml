@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:UC="clr-namespace:RecordWin.UserControls"
-        mc:Ignorable="d" Height="340" Width="580" ShowInTaskbar="False" WindowStyle="None"
+        mc:Ignorable="d" Height="400" Width="580" ShowInTaskbar="False" WindowStyle="None"
         WindowStartupLocation="CenterScreen" Topmost="True" AllowsTransparency="True" MouseDown="Window_MouseDown">
     <Grid Background="{StaticResource LinearBackground}">
         <Grid.Resources>
@@ -40,7 +40,7 @@
             </ToggleButton>
         </Border>
         <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1">
-            <WrapPanel Orientation="Vertical">
+            <WrapPanel Orientation="Vertical" Margin="0,0,-25,-55">
                 <GroupBox Header="录制设置">
                     <Grid>
                         <Grid.RowDefinitions>

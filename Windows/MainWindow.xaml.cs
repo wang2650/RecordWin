@@ -95,7 +95,7 @@ namespace RecordWin
         private void HiddenTools(bool? Hidden = null)
         {
             if (Hidden.HasValue) btDing.IsChecked = !Hidden.Value;//参数赋值了则设置
-            DingRotate.BeginAnimation(System.Windows.Media.RotateTransform.AngleProperty, 
+            DingRotate.BeginAnimation(System.Windows.Media.RotateTransform.AngleProperty,
                 new DoubleAnimation((bool)btDing.IsChecked ? 0 : 45, Duration1));//钉住按钮执行动画
             TitlePanel.Height = !(bool)btDing.IsChecked && !SettingPop.IsOpen ? 3 : 40;//通过修改高度使动画效果出现与否来实现显隐
         }
@@ -196,6 +196,8 @@ namespace RecordWin
         /// 音频捕获
         /// </summary>
         private WaveInEvent AudioStreamer;
+
+        private WasapiLoopbackCapture AudioBoxCap;
         /// <summary>
         /// 音频写入
         /// </summary>
@@ -352,6 +354,14 @@ namespace RecordWin
                 AudioWriter = new WaveFileWriter(CurrentAudioPath, AudioStreamer.WaveFormat);
                 AudioStreamer.StartRecording();
             }
+            else
+            {
+                AudioBoxCap = new WasapiLoopbackCapture();
+                AudioBoxCap.DataAvailable += AudioDataAvailableHandle;
+                AudioWriter = new WaveFileWriter(CurrentAudioPath, AudioBoxCap.WaveFormat);
+                AudioBoxCap.StartRecording();
+
+            }
 
             IsRecording = true;
             IsParsing = false;
@@ -391,6 +401,12 @@ namespace RecordWin
                     AudioStreamer.Dispose();
                     AudioWriter.Close();
                 }
+                else
+                {
+                    AudioBoxCap.StopRecording();
+                    AudioBoxCap.Dispose();
+                    AudioWriter.Close();
+                }
                 HiddenTools(SettingHelp.Settings.自动隐藏);
                 btParse.Visibility = Visibility.Collapsed;//暂停按钮隐藏
                 btStop.Visibility = Visibility.Collapsed;//停止按钮隐藏
@@ -403,7 +419,7 @@ namespace RecordWin
                     waitBar.Value = 0;
                     barGrid.Visibility = Visibility.Visible;
                     //有视频有声音的时候再进行ffmpeg合成
-                    if ((SettingHelp.Settings.桌面 || SettingHelp.Settings.摄像头) && SettingHelp.Settings.声音)
+                    if ((SettingHelp.Settings.桌面 || SettingHelp.Settings.摄像头))
                     {
                         System.Threading.Tasks.Task.Factory.StartNew(() =>
                         {
@@ -426,7 +442,8 @@ namespace RecordWin
                             string tempVideo = CurrentVideoPath;
                             string tempAudio = SettingHelp.Settings.声音 ? $"-i \"{CurrentAudioPath}\"" : "";
                             string outfile = MakeFilePath(SettingHelp.Settings.编码类型);
-                            Functions.CMD($"ffmpeg -i {tempVideo} {tempAudio} -acodec copy {outfile} -crf 12");
+                            Functions.CMD($"ffmpeg -i {tempVideo} -i {tempAudio} -c:v copy -c:a aac -strict experimental {outfile}");
+                            // Functions.CMD($"ffmpeg -i {tempVideo} {tempAudio} -acodec copy {outfile} -crf 12");
                             DeleteFile(tempVideo, tempAudio, !SettingHelp.Settings.保留视频, !SettingHelp.Settings.保留音频);
                             Dispatcher.Invoke(() =>
                             {
